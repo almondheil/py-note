@@ -1,0 +1,45 @@
+I don't know enough about Python's file creation or writing
+to do this in actual code, so pseudocode it is for now.
+
+def note_list(args):
+	get config
+	for every file in notes dir:
+		open file
+			get title if exitsts
+			get any file_tags
+			get first few lines of content
+		if (tags == None or tags.contains_any(file_tags):
+			if (long print):
+				print something like this
+					filename - Title
+						tags tags tags (may span multiple lines, should format
+						to overflow nicely though)
+						content first line 
+			else:
+				print something like this, truncated to one line
+					filename - tags tags tags
+
+def note_edit(args):
+	get config
+	create empty list to_select
+	for file in notes_dir:
+		open file
+			get any file tags
+		if (tags == None or tags.contains_any(file_tags)):
+			add filename to to_select
+	run fzf or something similar on to_select
+	run configured editor on the result
+
+def note_new(args):
+	get config
+	notename = date YYYYMMDD
+	if (name != none):
+		notename.append(f"-{arg name}")
+	notepath = /path/to/notename.extension
+	if (notepath is a file):
+		give an error saying to edit that file or provide a name
+		exit
+	open notepath, 'w'
+		add title if specified
+		add tags if specified
+	open editor on nodepath
