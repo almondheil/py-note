@@ -1,0 +1,117 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+
+def parse_config():
+    # Default config
+    config = {'note_dir': 'notes'}
+    # TODO for now, this is bound to a relative path.
+    # I wanna do it like ~/.note.conf or $XDG_CONFIG_HOME/note/config
+    # Parse any config files to modify configuration
+    with open('config', 'r') as file:
+        for line in file.readlines():
+            stripped = line.strip()
+            parts = [s.strip() for s in line.split('=')]
+            # TODO use a match statement or whatever fancy thing that is
+            if (stripped[0] == '#' or stripped == ''):
+                # Skip comments and whitespace lines
+                pass
+            elif (parts[0] == 'note_dir'):
+                config['note_dir'] = parts[1]
+            elif (parts[0] == 'note_ext'):
+                config['note_ext'] = parts[1]
+            else:
+                print(f"{sys.argv[0]}: warning: unrecognized configuration option '{parts[0]}'") 
+    return config
+
+def note_list(args):
+    tags = [] if args.tags == None else args.tags
+    conf = parse_config()
+    print("note list not yet implemented")
+    print(args)
+
+def note_edit(args):
+    tags = [] if args.tags == None else args.tags
+    print("note edit not yet implemented")
+    print(args)
+
+def note_new(args):
+    tags = [] if args.tags == None else args.tags
+    print("note new not yet implemented")
+    print(args)
+
+def main(str_args):
+    parser = argparse.ArgumentParser(description='Note management utility')
+
+    subparsers = parser.add_subparsers(required=True)
+    parser_list = subparsers.add_parser('list', aliases=['ls'], help='list notes')
+    parser_edit = subparsers.add_parser('edit', aliases=['e'], help='edit existing note')
+    parser_new  = subparsers.add_parser('new', aliases='n', help='create new note')
+
+    # List
+    parser_list.add_argument('-t', '--tags', nargs='+',
+                             help='filter notes with tags', metavar='TAG')
+    parser_list.add_argument('--long', action='store_true',
+                             help='print long listings')
+    parser_list.set_defaults(func=note_list)
+
+    # Edit
+    parser_edit.add_argument('-t', '--tags', nargs='+',
+                             help='filter notes with tags', metavar='TAG')
+    parser_edit.set_defaults(func=note_edit)
+
+    # New
+    parser_new.add_argument('name', nargs='?',
+                            help='optional note name')
+    parser_new.add_argument('-t', '--tags', nargs='+',
+                            help='initial note tags', metavar='TAG')
+    parser_new.set_defaults(func=note_new)
+
+    # Parse args and pass them to the appropriate func
+    args = parser.parse_args(str_args)
+    args.func(args)
+
+
+"""
+
+What sorta cli behavior do we need?
+
+note list // note ls
+
+    does a stdout printout of all notes
+
+    with -t / --tags, will filter by tags
+
+    maybe some control over whether we do oneline or multiline output per note
+
+        long vs short listing
+
+        note title
+            tags tags tags
+            last edited date
+
+        note title
+
+note edit // note e
+
+    interactively search for a note (fzf?), then open it in $EDITOR
+
+    if you use -t / --tags, it will only show notes matching those tags to start off
+
+note new // note n
+
+    create a note
+
+    at minimum will create ~/Notes/YYYYMMDD.md (or whatever they set the note dir to)
+
+    -n will give it a name, YYYYMMDD-note-title.md
+
+    -t will give it tags
+
+    -d will choose the note directory (?)
+
+"""
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
