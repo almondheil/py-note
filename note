@@ -60,12 +60,12 @@ def filehead(file, n):
     return head
 
 def note_list(args):
-    tags = [] if args.tags == None else args.tags
     conf = parse_config()
 
     # Compile regex now
-    title_re = re.compile('^Title:\s*(.*?)$')
-    date_re  = re.compile('^Date:\s*(.*?)$')
+    if (args.long):
+        title_re = re.compile('^Title:\s*(.*?)$')
+        date_re  = re.compile('^Date:\s*(.*?)$')
     tags_re  = re.compile('^Tags:\s*(.*?)$')
     for filename in os.listdir(conf['note_dir']):
         # Parse title, date, and tags from file if they exist
@@ -75,27 +75,30 @@ def note_list(args):
         with open(os.path.join(conf['note_dir'], filename), 'r') as file:
             head = filehead(file, 3)
             for line in head:
-                title_match = title_re.findall(line)
-                if (title_match):
-                    f_title = title_match[0]
-                    continue
-                date_match  = date_re.findall(line)
-                if (date_match):
-                    f_date = date_match[0]
-                    continue
                 tags_match  = tags_re.findall(line)
                 if (tags_match):
                     f_tags = tags_match[0].split()
                     continue
+                if (args.long):
+                    title_match = title_re.findall(line)
+                    if (title_match):
+                        f_title = title_match[0]
+                        continue
+                    date_match  = date_re.findall(line)
+                    if (date_match):
+                        f_date = date_match[0]
+                        continue
 
         # Only print if arg 'tags' not provided or if note's tags match
         if (args.tags == None or any(x in args.tags for x in f_tags)):
-
+            # Always print filename
             print(f'{filename}', end="")
+            # Include tags on same line if not long printing
             if (not args.long and f_tags):
                 print(" - ", end="")
                 print(*f_tags, end="")
             print()
+            # Print either field or -- when long printing
             if (args.long):
                 print('  Title: ', end='')
                 print(f_title) if f_title else print('--')
@@ -105,14 +108,11 @@ def note_list(args):
                 print(*f_tags) if f_tags else print('--')
 
 def note_edit(args):
-    tags = [] if args.tags == None else args.tags
+
     print("note edit not yet implemented")
-    print(args)
 
 def note_new(args):
-    tags = [] if args.tags == None else args.tags
     print("note new not yet implemented")
-    print(args)
 
 def main(str_args):
     parser = argparse.ArgumentParser(description='Note management utility')
