@@ -8,12 +8,12 @@ human-readable format.
 First, just copy the `note` script to somewhere easy to access, like in
 `~/.local/bin` or somewhere else in `$PATH`.
 
-You will also need to install the `iterfzf` library. It does not seem to be
+You will also need to install the `pyfzf` library. It does not seem to be
 currently maintained, so this aspect is a point of improvement in the script.
 For now, something like this should work:
 
 ```
-pip install --user iterfzf
+pip install --user pyfzf 
 ```
 
 Next, create a config file for the utility. This can be in any of the following
@@ -119,7 +119,7 @@ Note content, which the command line doesn't care about at all.
 
 # Todo
 
-- [ ] Remove `iterfzf` dependency so script can just be plug and play
+- [ ] Remove `pyfzf` dependency so script can just be plug and play
 
 - [x] Fix `-t` filter behavior to be "all" instead of "any"
 
