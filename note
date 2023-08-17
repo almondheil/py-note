@@ -130,7 +130,8 @@ def note_edit(args):
             to_select.append(filename)
 
     sel = iterfzf(to_select)
-    subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel)])
+    if (sel != None):
+        subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel)])
 
 def note_new(args):
     conf = parse_config()

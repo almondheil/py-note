@@ -131,3 +131,5 @@ Note content, which the command line doesn't care about at all.
 
     `conf.editor` > `$EDITOR` > `vi` (fallback)
 
+- [x] Avoid crashing when `note edit` fzf returns nothing (e.g. when no items
+    are valid)
