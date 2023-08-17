@@ -1,7 +1,0 @@
-# TODO this will be the directory where notes are stored, used both for fetching and creating new ones.
-# it should also have a sensible default, but idk what that'd be. ~/Documents or $XDG_DOCUMENT_HOME?
-note_dir = notes
-# TODO this will be the extension of the notes that it creates. e.g. 20230816-what-the-hell.md, or .org, or .txt or whatever
-extension = .md
-# TODO this should supersede $EDITOR, but we should use that if we have it. But what if neither exists?
-editor = nvim
