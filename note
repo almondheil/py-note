@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import sys
+from datetime import datetime
 from iterfzf import iterfzf
 
 def locate_config():
@@ -132,7 +133,28 @@ def note_edit(args):
     subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel)])
 
 def note_new(args):
-    print("note new not yet implemented")
+    conf = parse_config()
+    note_name = datetime.today().strftime('%Y%m%d')
+    if (args.name):
+        note_name += "-" + args.name
+    note_path = os.path.join(conf['note_dir'], note_name + conf['extension'])
+
+    # Refuse to change an existing note file
+    if (os.path.exists(note_path)):
+        raise FileExistsError(f'Note with title "{note_name}" already exists, did you want {sys.argv[0]} edit?')
+
+    with open(note_path, 'w') as note_file:
+        # Write blank title, today's date, and any specified tags
+        note_file.write("Title: \n")
+        note_file.write('Date:  ' + datetime.today().strftime('%Y-%m-%d') + "\n")
+        note_file.write('Tags: ')
+        if (args.tags): [note_file.write(" " + tag) for tag in args.tags]
+
+        # Write ====== divider across
+        note_file.write('\n\n')
+        [note_file.write('=') for _ in range(80)]
+        note_file.write('\n\n')
+    subprocess.run([conf['editor'], note_path])
 
 def main(str_args):
     parser = argparse.ArgumentParser(description='Note management utility')
@@ -167,7 +189,7 @@ def main(str_args):
     # Handle intentionally raised errors by printing cleanly
     try:
         args.func(args)
-    except (FileNotFoundError, ValueError) as e:
+    except (FileExistsError, FileNotFoundError, ValueError) as e:
         print(sys.argv[0] + ": Error: " + str(e))
         return 1
 
