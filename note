@@ -16,12 +16,14 @@ def locate_config():
         raise FileNotFoundError(sys.argv[0] + ": Error: No note config found!")
 
 def parse_config():
+    conf_fname = locate_config()
     # Default config
-    config = {'note_dir': 'notes'}
+    config = {'extension': '.txt',
+              'editor': 'vi'}
     # TODO for now, this is bound to a relative path.
     # I wanna do it like ~/.note.conf or $XDG_CONFIG_HOME/note/config
     # Parse any config files to modify configuration
-    with open('config', 'r') as file:
+    with open(conf_fname, 'r') as file:
         for line in file.readlines():
             stripped = line.strip()
             parts = [s.strip() for s in line.split('=')]
@@ -31,10 +33,12 @@ def parse_config():
                 pass
             elif (parts[0] == 'note_dir'):
                 config['note_dir'] = parts[1]
-            elif (parts[0] == 'note_ext'):
-                config['note_ext'] = parts[1]
+            elif (parts[0] == 'extension'):
+                config['extension'] = parts[1]
+            elif (parts[0] == 'editor'):
+                config['editor'] = parts[1]
             else:
-                print(f"{sys.argv[0]}: warning: unrecognized configuration option '{parts[0]}'") 
+                print(sys.argv[0] + ': Warning: Unrecognized configuration option: "' + parts[1] + '"') 
     return config
 
 def note_list(args):
