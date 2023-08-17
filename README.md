@@ -121,7 +121,7 @@ Note content, which the command line doesn't care about at all.
 
 - [ ] Remove `iterfzf` dependency so script can just be plug and play
 
-- [ ] Fix `-t` filter behavior to be "all" instead of "any"
+- [x] Fix `-t` filter behavior to be "all" instead of "any"
 
 - [ ] Allow the config file to parse `$HOME` and other env vars
 

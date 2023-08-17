@@ -94,7 +94,7 @@ def note_list(args):
                         continue
 
         # Only print if arg 'tags' not provided or if note's tags match
-        if (args.tags == None or any(x in args.tags for x in f_tags)):
+        if (args.tags == None or all(x in f_tags for x in args.tags)):
             # Always print filename
             print(f'{filename}', end="")
             # Include tags on same line if not long printing
@@ -126,7 +126,7 @@ def note_edit(args):
                 if (tags_match):
                     f_tags = tags_match[0].split()
                     break
-        if (args.tags == None or any(x in args.tags for x in f_tags)):
+        if (args.tags == None or all(x in f_tags for x in args.tags)):
             to_select.append(filename)
 
     sel = iterfzf(to_select)
