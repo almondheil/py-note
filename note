@@ -3,7 +3,9 @@
 import argparse
 import os
 import re
+import subprocess
 import sys
+from iterfzf import iterfzf
 
 def locate_config():
     # $XDG_CONFIG_HOME/note/config
@@ -73,6 +75,7 @@ def note_list(args):
         f_date = ""
         f_tags = []
         with open(os.path.join(conf['note_dir'], filename), 'r') as file:
+            # Header will never take up more than 3 lines
             head = filehead(file, 3)
             for line in head:
                 tags_match  = tags_re.findall(line)
@@ -108,8 +111,25 @@ def note_list(args):
                 print(*f_tags) if f_tags else print('--')
 
 def note_edit(args):
+    conf = parse_config()
 
-    print("note edit not yet implemented")
+    to_select = []
+    tags_re  = re.compile('^Tags:\s*(.*?)$')
+    for filename in os.listdir(conf['note_dir']):
+        f_tags = []
+        with open(os.path.join(conf['note_dir'], filename), 'r') as file:
+            # Header will never take up more than 3 lines
+            head = filehead(file, 3)
+            for line in head:
+                tags_match  = tags_re.findall(line)
+                if (tags_match):
+                    f_tags = tags_match[0].split()
+                    break
+        if (args.tags == None or any(x in args.tags for x in f_tags)):
+            to_select.append(filename)
+
+    sel = iterfzf(to_select)
+    subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel)])
 
 def note_new(args):
     print("note new not yet implemented")
