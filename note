@@ -2,6 +2,18 @@
 
 import argparse
 import sys
+import os
+
+def locate_config():
+    if (os.environ.get('XDG_CONFIG_HOME') and os.path.exists(os.environ.get('XDG_CONFIG_HOME') + '/note/config')):
+        return os.environ.get('XDG_CONFIG_HOME') + '/note/config'
+    elif (os.path.exists(os.environ.get('HOME') + '/.config/note/config')):
+        return os.environ.get('HOME') + '/.config/note/config'
+    elif (os.path.exists(os.environ.get('HOME') + '/.note.conf')):
+        return os.environ.get('HOME') + '/.note.conf'
+    else:
+        print("config does not exist!")
+        raise FileNotFoundError(sys.argv[0] + ": Error: No note config found!")
 
 def parse_config():
     # Default config
