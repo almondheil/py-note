@@ -119,7 +119,15 @@ Note content, which the command line doesn't care about at all.
 
 # Todo
 
-- [ ] Remove iterfzf dependency so script can just be plug and play
+- [ ] Remove `iterfzf` dependency so script can just be plug and play
 
-- [ ] Fix -t filter behavior to be "all" instead of "any"
+- [ ] Fix `-t` filter behavior to be "all" instead of "any"
+
+- [ ] Allow the config file to parse `$HOME` and other env vars
+
+  - [ ] Possibly using `ConfParse`
+
+- [ ] Use `$EDITOR` variable if config editor is not set
+
+    `conf.editor` > `$EDITOR` > `vi` (fallback)
 
