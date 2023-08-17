@@ -19,11 +19,15 @@ pip install --user pyfzf
 Next, create a config file for the utility. This can be in any of the following
 locations (in order of priority)
 
+- `%APPDATA\note\config` (on Windows)
+
+    Note: I do not own any Windows machines to test this on. If something
+    breaks, filing an issue is the best way to get me to fix it.
+
 - `$XDG_CONFIG_HOME/note/config`
 
 - `$HOME/.config/note/config`
 
-- `$HOME/note.conf`
 
 The utility file **must** contain a line telling the program the location of your
 notes directory (`note_dir`), and may also contain other directives. An example

@@ -8,20 +8,18 @@ import sys
 from datetime import datetime
 from pyfzf.pyfzf import FzfPrompt
 
-def locate_config():
-    # $XDG_CONFIG_HOME/note/config
-    if ('XDG_CONFIG_HOME' in os.environ and os.path.exists(os.environ.get('XDG_CONFIG_HOME') + '/note/config')):
-        return os.environ.get('XDG_CONFIG_HOME') + '/note/config'
-    # $HOME/.config/note/config
-    elif (os.path.exists(os.environ.get('HOME') + '/.config/note/config')):
-        return os.environ.get('HOME') + '/.config/note/config'
-    # $HOME/.note.conf
-    elif (os.path.exists(os.environ.get('HOME') + '/.note.conf')):
-        return os.environ.get('HOME') + '/.note.conf'
-    else:
+def parse_config():
+    # Attempt to find config directory
+    conf_path = os.path.join(
+        os.environ.get('APPDATA') or
+        os.environ.get('XDG_CONFIG_HOME') or
+        os.path.join(os.environ.get('HOME'), '.config'),
+        'note',
+        'config'
+    )
+    if (conf_path == os.path.join('note', 'config')):
         raise FileNotFoundError("No note config found!")
 
-def parse_config():
     config = {'extension': '.txt',
               'editor': 'vi'}
 
