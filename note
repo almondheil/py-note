@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
-import sys
 import os
+import re
+import sys
 
 def locate_config():
     # $XDG_CONFIG_HOME/note/config
@@ -18,20 +19,21 @@ def locate_config():
         raise FileNotFoundError("No note config found!")
 
 def parse_config():
-    conf_fname = locate_config()
-    # Default config (if not overwritten)
     config = {'extension': '.txt',
               'editor': 'vi'}
-    # TODO for now, this is bound to a relative path.
-    # I wanna do it like ~/.note.conf or $XDG_CONFIG_HOME/note/config
+
     # Parse any config files to modify configuration
+    conf_fname = locate_config()
     with open(conf_fname, 'r') as file:
         for line in file.readlines():
+            # Skip any comments or blank lines
             stripped = line.strip()
-            parts = [s.strip() for s in line.split('=')]
-            # TODO use a match statement or whatever fancy thing that is
             if (stripped[0] == '#' or stripped == ''):
                 continue
+
+            # Attempt to match stripped name used
+            # TODO how do I deal with invalid values for valid configs?
+            parts = [s.strip() for s in stripped.split('=')]
             match parts[0]:
                 case 'note_dir':
                     config['note_dir'] = parts[1]
@@ -42,16 +44,65 @@ def parse_config():
                 case _:
                     print(sys.argv[0] + ': Warning: Unrecognized configuration option: "' + parts[0] + '"') 
 
-    if (not config.get('note_dir')):
+    # Raise error if no note_dir was set
+    if ('note_dir' not in config):
         raise ValueError('No note directory was found, make sure to specify one in config.')
     return config
+
+def filehead(file, n):
+    num_lines = 0
+    head = []
+    for line in file:
+        if (num_lines > 2):
+            break
+        head.append(line)
+        num_lines += 1
+    return head
 
 def note_list(args):
     tags = [] if args.tags == None else args.tags
     conf = parse_config()
-    print(conf)
-    print("note list not yet implemented")
-    print(args)
+
+    # Compile regex now
+    title_re = re.compile('^Title:\s*(.*?)$')
+    date_re  = re.compile('^Date:\s*(.*?)$')
+    tags_re  = re.compile('^Tags:\s*(.*?)$')
+    for filename in os.listdir(conf['note_dir']):
+        # Parse title, date, and tags from file if they exist
+        f_title = ""
+        f_date = ""
+        f_tags = []
+        with open(os.path.join(conf['note_dir'], filename), 'r') as file:
+            head = filehead(file, 3)
+            for line in head:
+                title_match = title_re.findall(line)
+                if (title_match):
+                    f_title = title_match[0]
+                    continue
+                date_match  = date_re.findall(line)
+                if (date_match):
+                    f_date = date_match[0]
+                    continue
+                tags_match  = tags_re.findall(line)
+                if (tags_match):
+                    f_tags = tags_match[0].split()
+                    continue
+
+        # Only print if arg 'tags' not provided or if note's tags match
+        if (args.tags == None or any(x in args.tags for x in f_tags)):
+
+            print(f'{filename}', end="")
+            if (not args.long and f_tags):
+                print(" - ", end="")
+                print(*f_tags, end="")
+            print()
+            if (args.long):
+                print('  Title: ', end='')
+                print(f_title) if f_title else print('--')
+                print('  Date:  ', end='')
+                print(f_date) if f_date else print('--')
+                print('  Tags:  ', end='')
+                print(*f_tags) if f_tags else print('--')
 
 def note_edit(args):
     tags = [] if args.tags == None else args.tags
