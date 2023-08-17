@@ -84,45 +84,6 @@ def main(str_args):
     args = parser.parse_args(str_args)
     args.func(args)
 
-
-"""
-
-What sorta cli behavior do we need?
-
-note list // note ls
-
-    does a stdout printout of all notes
-
-    with -t / --tags, will filter by tags
-
-    maybe some control over whether we do oneline or multiline output per note
-
-        long vs short listing
-
-        note title
-            tags tags tags
-            last edited date
-
-        note title
-
-note edit // note e
-
-    interactively search for a note (fzf?), then open it in $EDITOR
-
-    if you use -t / --tags, it will only show notes matching those tags to start off
-
-note new // note n
-
-    create a note
-
-    at minimum will create ~/Notes/YYYYMMDD.md (or whatever they set the note dir to)
-
-    -n will give it a name, YYYYMMDD-note-title.md
-
-    -t will give it tags
-
-    -d will choose the note directory (?)
-
 """
 
 if __name__ == '__main__':
