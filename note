@@ -6,7 +6,7 @@ import re
 import subprocess
 import sys
 from datetime import datetime
-from iterfzf import iterfzf
+from pyfzf.pyfzf import FzfPrompt
 
 def locate_config():
     # $XDG_CONFIG_HOME/note/config
@@ -129,9 +129,9 @@ def note_edit(args):
         if (args.tags == None or all(x in f_tags for x in args.tags)):
             to_select.append(filename)
 
-    sel = iterfzf(to_select)
-    if (sel != None):
-        subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel)])
+    fzf = FzfPrompt()
+    sel = fzf.prompt(to_select)
+    if (sel): subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel[0])])
 
 def note_new(args):
     conf = parse_config()
