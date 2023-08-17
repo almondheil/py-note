@@ -19,7 +19,7 @@ def locate_config():
 
 def parse_config():
     conf_fname = locate_config()
-    # Default config
+    # Default config (if not overwritten)
     config = {'extension': '.txt',
               'editor': 'vi'}
     # TODO for now, this is bound to a relative path.
@@ -31,16 +31,16 @@ def parse_config():
             parts = [s.strip() for s in line.split('=')]
             # TODO use a match statement or whatever fancy thing that is
             if (stripped[0] == '#' or stripped == ''):
-                # Skip comments and whitespace lines
-                pass
-            elif (parts[0] == 'note_dir'):
-                config['note_dir'] = parts[1]
-            elif (parts[0] == 'extension'):
-                config['extension'] = parts[1]
-            elif (parts[0] == 'editor'):
-                config['editor'] = parts[1]
-            else:
-                print(sys.argv[0] + ': Warning: Unrecognized configuration option: "' + parts[1] + '"') 
+                continue
+            match parts[0]:
+                case 'note_dir':
+                    config['note_dir'] = parts[1]
+                case 'extension':
+                    config['extension'] = parts[1]
+                case 'editor':
+                    config['editor'] = parts[1]
+                case _:
+                    print(sys.argv[0] + ': Warning: Unrecognized configuration option: "' + parts[0] + '"') 
 
     if (not config.get('note_dir')):
         raise ValueError('No note directory was found, make sure to specify one in config.')
