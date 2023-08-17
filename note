@@ -39,11 +39,15 @@ def parse_config():
                 config['editor'] = parts[1]
             else:
                 print(sys.argv[0] + ': Warning: Unrecognized configuration option: "' + parts[1] + '"') 
+
+    if (not config.get('note_dir')):
+        raise ValueError('No note directory was found, make sure to specify one in config.')
     return config
 
 def note_list(args):
     tags = [] if args.tags == None else args.tags
     conf = parse_config()
+    print(conf)
     print("note list not yet implemented")
     print(args)
 
@@ -86,9 +90,17 @@ def main(str_args):
 
     # Parse args and pass them to the appropriate func
     args = parser.parse_args(str_args)
-    args.func(args)
+    
+    # Handle intentionally raised errors by printing cleanly
+    try:
+        args.func(args)
+    except (FileNotFoundError, ValueError) as e:
+        print(sys.argv[0] + ": Error: " + str(e))
+        return 1
 
-"""
+    # Normal exit
+    return 0
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    # Inform system of exit status
+    sys.exit(main(sys.argv[1:]))
