@@ -239,7 +239,7 @@ def main(sys_args) -> int:
     parser = argparse.ArgumentParser(description='Note management utility')
 
     subparsers = parser.add_subparsers(required=True)
-    parser_list = subparsers.add_parser('list', aliases=['ls'], help='list notes')
+    parser_list = subparsers.add_parser('list', aliases=['ls', 'l'], help='list notes')
     parser_edit = subparsers.add_parser('edit', aliases=['e'], help='edit existing note')
     parser_new  = subparsers.add_parser('new', aliases='n', help='create new note')
 
