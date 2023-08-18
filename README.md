@@ -134,25 +134,10 @@ Tags:  whitespace separated tags
 Note content, which the command line doesn't care about at all.
 ```
 
+If you are adding your own header, you may include or omit any of the tags that
+you want. This script reads the first three lines of the file looking for
+a title, date, and tags, and does not attempt to read any further.
+
 # Todo
 
-- [ ] Nicer error handling (surpress python backtrace?)
-
-  - [ ] Note directory does not exist
-
-  - [ ] Bad permissions
-
-  Or maybe it's a good idea to just let the errors print out fully? Unsure.
-
 - [ ] Remove `pyfzf` dependency so script can just be plug and play
-
-- [x] Fix `-t` filter behavior to be "all" instead of "any"
-
-- [x] Allow the config file to parse `$HOME` and other env vars
-
-- [x] Use `$EDITOR` variable if config editor is not set
-
-    `conf.editor` > `$EDITOR` > `vi` (fallback)
-
-- [x] Avoid crashing when `note edit` fzf returns nothing (e.g. when no items
-    are valid)
