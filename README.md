@@ -5,6 +5,45 @@ human-readable format.
 
 # Installation
 
+## Requirements
+
+- Python 3.6 or greater
+
+- `fzf` system utility (`fzf.exe` on Windows)
+
+- `pyfzf` Python package ((https://github.com/nk412/pyfzf)[https://github.com/nk412/pyfzf])
+
+## Install steps
+
+1. Make sure you have all the requirements installed. It must be possible for
+   Python to find the `pyfzf` library when you run the script, so it is best to
+   install as a system package or possibly with `pip install --user pyfzf`.
+
+2. Clone this repository somewhere on your system. The repo can be deleted after
+   installation if desired, so don't worry about location too much.
+
+```
+git clone https://github.com/almondheil/py-note.git
+```
+
+3. Copy the `note` script somewhere on `$PATH`, such as `~/.local/bin`. 
+
+4. Create a config file for the util to use. A sample bare-bones config must
+   include a path to the note directory, which you should create if it does not
+   already exist:
+
+   ```
+   note_dir = /home/<username>/Notes
+   ```
+
+   Note that at this time, it is not possible for the configuration file to
+   parse environment variables or shortcuts such as `$HOME` or `~`, so you must
+   provide the absolute path to the directory.
+
+3. Create a config file for the util to use.
+
+Your config file must be in one of the foll
+
 First, just copy the `note` script to somewhere easy to access, like in
 `~/.local/bin` or somewhere else in `$PATH`.
 
@@ -27,7 +66,6 @@ locations (in order of priority)
 - `$XDG_CONFIG_HOME/note/config`
 
 - `$HOME/.config/note/config`
-
 
 The utility file **must** contain a line telling the program the location of your
 notes directory (`note_dir`), and may also contain other directives. An example
@@ -123,6 +161,14 @@ Note content, which the command line doesn't care about at all.
 
 # Todo
 
+- [ ] Nicer error handling (surpress python backtrace?)
+
+  - [ ] Note directory does not exist
+
+  - [ ] Bad permissions
+
+  Or maybe it's a good idea to just let the errors print out fully? Unsure.
+
 - [ ] Remove `pyfzf` dependency so script can just be plug and play
 
 - [x] Fix `-t` filter behavior to be "all" instead of "any"
@@ -131,7 +177,7 @@ Note content, which the command line doesn't care about at all.
 
   - [ ] Possibly using `ConfParse`
 
-- [ ] Use `$EDITOR` variable if config editor is not set
+- [x] Use `$EDITOR` variable if config editor is not set
 
     `conf.editor` > `$EDITOR` > `vi` (fallback)
 
