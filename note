@@ -23,9 +23,11 @@ def parse_config():
     config = {'extension': '.txt',
               'editor': 'vi'}
 
+    # Set editor if $EDITOR is set (does not override config file)
+    if (os.environ.get('EDITOR')): config['editor'] = os.environ.get('EDITOR')
+
     # Parse any config files to modify configuration
-    conf_fname = locate_config()
-    with open(conf_fname, 'r') as file:
+    with open(conf_path, 'r') as file:
         for line in file.readlines():
             # Skip any comments or blank lines
             stripped = line.strip()
@@ -109,6 +111,9 @@ def note_list(args):
                 print('  Tags:  ', end='')
                 print(*f_tags) if f_tags else print('--')
 
+def fzf(options):
+    return None
+
 def note_edit(args):
     conf = parse_config()
 
@@ -127,8 +132,7 @@ def note_edit(args):
         if (args.tags == None or all(x in f_tags for x in args.tags)):
             to_select.append(filename)
 
-    fzf = FzfPrompt()
-    sel = fzf.prompt(to_select)
+    sel = FzfPrompt().prompt(to_select)
     if (sel): subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel[0])])
 
 def note_new(args):
