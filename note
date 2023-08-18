@@ -188,6 +188,28 @@ def note_new(args):
     if (os.path.exists(note_path)):
         raise FileExistsError(f'Note with title "{note_name}" already exists, did you want {sys.argv[0]} edit?')
 
+    # Prompt user to create note if -y flag is not passed
+    if (not args.yes):
+        answer = ''
+        while (True):
+            answer = input('Create note "' + note_name + conf['extension'] + '"? [Y/n]: ')
+            match answer.lower():
+                case '':
+                    create = True
+                    break
+                case 'y':
+                    create = True
+                    break
+                case 'n':
+                    create = False
+                    break
+                case _:
+                    continue
+
+        # Return now if the user does not want to create the file
+        if (not create):
+            return
+
     with open(note_path, 'w') as note_file:
         # Write blank title, today's date, and any specified tags
         note_file.write("Title: \n")
@@ -235,9 +257,11 @@ def main(sys_args) -> int:
 
     # New
     parser_new.add_argument('name', nargs='?',
-                            help='optional note name')
+                            help='name to include in filename')
     parser_new.add_argument('-t', '--tags', nargs='+',
-                            help='initial note tags', metavar='TAG')
+                            help='tags to create note with', metavar='TAG')
+    parser_new.add_argument('-y', '--yes', required=False, action='store_true',
+                            help='create note without confirmation')
     parser_new.set_defaults(func=note_new)
 
     # Parse args and pass them to the appropriate func
