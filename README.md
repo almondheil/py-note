@@ -137,7 +137,3 @@ Note content, which the command line doesn't care about at all.
 If you are adding your own header, you may include or omit any of the tags that
 you want. This script reads the first three lines of the file looking for
 a title, date, and tags, and does not attempt to read any further.
-
-# Todo
-
-- [ ] Remove `pyfzf` dependency so script can just be plug and play
