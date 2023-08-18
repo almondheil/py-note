@@ -9,51 +9,25 @@ human-readable format.
 
 - Python 3.6 or greater
 
-- `fzf` system utility (`fzf.exe` on Windows)
+- `fzf` system utility ((https://github.com/junegunn/fzf)[https://github.com/junegunn/fzf])
 
 - `pyfzf` Python package ((https://github.com/nk412/pyfzf)[https://github.com/nk412/pyfzf])
 
+    Note: Must be visible to python when you run the script, so best to install
+    for user or globally rather than in an environment.
+
 ## Install steps
 
-1. Make sure you have all the requirements installed. It must be possible for
-   Python to find the `pyfzf` library when you run the script, so it is best to
-   install as a system package or possibly with `pip install --user pyfzf`.
+First, make sure you have the requirements listed above.
 
-2. Clone this repository somewhere on your system. The repo can be deleted after
-   installation if desired, so don't worry about location too much.
+Then, clone this repository somewhere on your system. The repo can be deleted after
+installation if desired, so don't worry about location too much.
 
 ```
 git clone https://github.com/almondheil/py-note.git
 ```
 
-3. Copy the `note` script somewhere on `$PATH`, such as `~/.local/bin`. 
-
-4. Create a config file for the util to use. A sample bare-bones config must
-   include a path to the note directory, which you should create if it does not
-   already exist:
-
-   ```
-   note_dir = /home/<username>/Notes
-   ```
-
-   Note that at this time, it is not possible for the configuration file to
-   parse environment variables or shortcuts such as `$HOME` or `~`, so you must
-   provide the absolute path to the directory.
-
-3. Create a config file for the util to use.
-
-Your config file must be in one of the foll
-
-First, just copy the `note` script to somewhere easy to access, like in
-`~/.local/bin` or somewhere else in `$PATH`.
-
-You will also need to install the `pyfzf` library. It does not seem to be
-currently maintained, so this aspect is a point of improvement in the script.
-For now, something like this should work:
-
-```
-pip install --user pyfzf 
-```
+With the repo cloned, copy the `note` script somewhere on `$PATH`, such as `~/.local/bin`. 
 
 Next, create a config file for the utility. This can be in any of the following
 locations (in order of priority)
@@ -61,19 +35,20 @@ locations (in order of priority)
 - `%APPDATA\note\config` (on Windows)
 
     Note: I do not own any Windows machines to test this on. If something
-    breaks, filing an issue is the best way to get me to fix it.
+    breaks, filing an issue or creating a pull request is the best way to make
+    sure it gets fixed.
 
 - `$XDG_CONFIG_HOME/note/config`
 
 - `$HOME/.config/note/config`
 
-The utility file **must** contain a line telling the program the location of your
+The config file **must** contain a line telling the program the location of your
 notes directory (`note_dir`), and may also contain other directives. An example
 config file appears below.
 
 ```
 # Directory where notes are stored
-note_dir = /home/<username>/Notes
+note_dir = $HOME/Notes
 # File extension for created notes (default: .txt)
 extension = .md
 # Editor for notes (default: vi)
@@ -173,9 +148,7 @@ Note content, which the command line doesn't care about at all.
 
 - [x] Fix `-t` filter behavior to be "all" instead of "any"
 
-- [ ] Allow the config file to parse `$HOME` and other env vars
-
-  - [ ] Possibly using `ConfParse`
+- [x] Allow the config file to parse `$HOME` and other env vars
 
 - [x] Use `$EDITOR` variable if config editor is not set
 
