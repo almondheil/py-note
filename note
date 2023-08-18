@@ -35,11 +35,11 @@ def parse_config():
                 continue
 
             # Attempt to match stripped name used
-            # TODO how do I deal with invalid values for valid configs?
             parts = [s.strip() for s in stripped.split('=')]
             match parts[0]:
                 case 'note_dir':
-                    config['note_dir'] = parts[1]
+                    # expand env vars in note_dir path, allowing $HOME but not ~
+                    config['note_dir'] = os.path.expandvars(parts[1])
                 case 'extension':
                     config['extension'] = parts[1]
                 case 'editor':
