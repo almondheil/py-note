@@ -8,7 +8,17 @@ import sys
 from datetime import datetime
 from pyfzf.pyfzf import FzfPrompt
 
-def parse_config():
+def parse_config() -> dict[str]:
+    """
+    Attempt to locate note config, returning a parsed version of it if found.
+
+    returns:
+        config read as dictionary. at least contains key 'note_dir',
+        and may contain others
+    raises:
+        FileNotFoundError if config file is not in checked locations
+        ValueError if 'note_dir' is not configured
+    """
     # Attempt to find config directory
     conf_path = os.path.join(
         os.environ.get('APPDATA') or
@@ -52,24 +62,40 @@ def parse_config():
         raise ValueError('No note directory was found, make sure to specify one in config.')
     return config
 
-def filehead(file, n):
+def filehead(file, n) -> list[str]:
+    """
+    Return the first n lines of an opened file in a list.
+
+    args:
+        file: a file that has been opened with open()
+        n: the number of lines to get
+    returns:
+        a list containing the first three lines of the file
+    """
     num_lines = 0
     head = []
     for line in file:
-        if (num_lines > 2):
+        if (num_lines > n):
             break
         head.append(line)
         num_lines += 1
     return head
 
 def note_list(args):
+    """
+    List notes from note directory, in long or short format and with filters
+    according to cli arguments.
+
+    args:
+        args: Parsed command line args from argparse
+    """
     conf = parse_config()
 
     # Compile regex now
+    tags_re  = re.compile('^Tags:\s*(.*?)$')
     if (args.long):
         title_re = re.compile('^Title:\s*(.*?)$')
         date_re  = re.compile('^Date:\s*(.*?)$')
-    tags_re  = re.compile('^Tags:\s*(.*?)$')
     for filename in os.listdir(conf['note_dir']):
         # Parse title, date, and tags from file if they exist
         f_title = ""
@@ -115,6 +141,13 @@ def fzf(options):
     return None
 
 def note_edit(args):
+    """
+    Allow the user to fzf the titles of their notes. Can also filter by tags
+    if specified in args.
+
+    args:
+        args: Parsed command line args from argparse
+    """
     conf = parse_config()
 
     to_select = []
@@ -136,6 +169,15 @@ def note_edit(args):
     if (sel): subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel[0])])
 
 def note_new(args):
+    """
+    Create a new note with a name based on today's date, as well an optional
+    title and tags.
+
+    args:
+        args: Parsed command line args from argparse
+    raises:
+        FileExistsError if the note that would be created already exists
+    """
     conf = parse_config()
     note_name = datetime.today().strftime('%Y%m%d')
     if (args.name):
@@ -159,7 +201,19 @@ def note_new(args):
         note_file.write('\n\n')
     subprocess.run([conf['editor'], note_path])
 
-def main(str_args):
+def main(sys_args) -> int:
+    """
+    Run when __name__ is __main__. Parses cli arguments and runs the
+    appropriate subfunction.
+
+    args:
+        sys_args: CLI arguments (sys.argv)
+    returns:
+        system exit status (0 success, nonzero failure)
+    excepts:
+        FileExistsError, FileNotFoundError, ValueError: prints error message
+        and returns nonzero exit status
+    """
     parser = argparse.ArgumentParser(description='Note management utility')
 
     subparsers = parser.add_subparsers(required=True)
@@ -187,7 +241,7 @@ def main(str_args):
     parser_new.set_defaults(func=note_new)
 
     # Parse args and pass them to the appropriate func
-    args = parser.parse_args(str_args)
+    args = parser.parse_args(sys_args[1:])
     
     # Handle intentionally raised errors by printing cleanly
     try:
@@ -201,4 +255,4 @@ def main(str_args):
 
 if __name__ == '__main__':
     # Inform system of exit status
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(main(sys.argv))
