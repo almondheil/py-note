@@ -55,7 +55,7 @@ def parse_config() -> dict[str]:
                 case 'editor':
                     config['editor'] = parts[1]
                 case _:
-                    print('note: Warning: Unrecognized configuration option: "' + parts[0] + '"') 
+                    print('note: Warning: Unrecognized configuration option: "' + parts[0] + '"')
 
     # Raise error if no note_dir was set
     if ('note_dir' not in config):
@@ -246,7 +246,7 @@ def main(sys_args) -> int:
     # List
     parser_list.add_argument('-t', '--tags', nargs='+',
                              help='filter notes with tags', metavar='TAG')
-    parser_list.add_argument('--long', action='store_true',
+    parser_list.add_argument('-l', '--long', action='store_true',
                              help='print long listings')
     parser_list.set_defaults(func=note_list)
 
@@ -266,7 +266,7 @@ def main(sys_args) -> int:
 
     # Parse args and pass them to the appropriate func
     args = parser.parse_args(sys_args[1:])
-    
+
     # Handle intentionally raised errors by printing cleanly
     try:
         args.func(args)
