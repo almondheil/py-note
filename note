@@ -165,8 +165,13 @@ def note_edit(args):
         if (args.tags == None or all(x in f_tags for x in args.tags)):
             to_select.append(filename)
 
-    sel = FzfPrompt().prompt(to_select)
-    if (sel): subprocess.run([conf['editor'], os.path.join(conf['note_dir'], sel[0])])
+    # Decide what to do based on how many options there are
+    if (len(to_select) == 0): return
+    elif (len(to_select) == 1):
+        subprocess.run([conf['editor'], os.path.join(conf['note_dir'], to_select[0])])
+    else:
+        fzf_selection = FzfPrompt().prompt(to_select)
+        if (fzf_selection): subprocess.run([conf['editor'], os.path.join(conf['note_dir'], fzf_selection[0])])
 
 def note_new(args):
     """
