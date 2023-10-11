@@ -228,6 +228,45 @@ def note_new(args):
         note_file.write('\n\n')
     subprocess.run([conf['editor'], note_path])
 
+def note_tags(args):
+    """
+    Display the tags used across all notes, either alphabetically or in order of
+    frequency of use.
+
+    args:
+        args: Parsed command line args from argparse
+    """
+    conf = parse_config()
+
+    # Prepare to store regex matched tags in a dict
+    # keys will be tags, values will be counts
+    found_tags = dict()
+    tags_re = re.compile('^Tags:\s*(.*?)$')
+
+    # Go through all files and figure out what their tags are
+    for filename in os.listdir(conf['note_dir']):
+        with open(os.path.join(conf['note_dir'], filename), 'r') as file:
+            # Header will never take up more than 3 lines
+            head = filehead(file, 3)
+            for line in head:
+                tags_match  = tags_re.findall(line)
+                # Add all tags to set as long as the match isn't empty
+                if tags_match:
+                    for t in tags_match[0].split():
+                        found_tags[t] = found_tags.setdefault(t, 0) + 1
+
+    # Sort tags depending on arguments
+    if args.alpha:
+        tags_list = sorted(list(found_tags.keys()))
+    else:
+        tags_list = [k for k, v in sorted(found_tags.items(), key=lambda item: item[1], reverse=True)]
+
+    # Print tags
+    for t in tags_list:
+        print(t)
+
+
+
 def main(sys_args) -> int:
     """
     Run when __name__ is __main__. Parses cli arguments and runs the
@@ -245,8 +284,9 @@ def main(sys_args) -> int:
 
     subparsers = parser.add_subparsers(required=True)
     parser_list = subparsers.add_parser('list', aliases=['ls', 'l'], help='list notes')
-    parser_edit = subparsers.add_parser('edit', aliases=['e'], help='edit existing note')
+    parser_edit = subparsers.add_parser('edit', aliases='e', help='edit existing note')
     parser_new  = subparsers.add_parser('new', aliases='n', help='create new note')
+    parser_tags = subparsers.add_parser('tag', aliases='t', help='list existing tags')
 
     # List
     parser_list.add_argument('-t', '--tags', nargs='+',
@@ -268,6 +308,13 @@ def main(sys_args) -> int:
     parser_new.add_argument('-y', '--yes', required=False, action='store_true',
                             help='create note without confirmation')
     parser_new.set_defaults(func=note_new)
+
+    # Tag list
+    parser_tags.add_argument('-a', '--alpha', action='store_true',
+                             help='list tags in alphabetic order')
+    parser_tags.add_argument('-f', '--freq', action='store_true',
+                             help='list tags in order of frequency of use')
+    parser_tags.set_defaults(func=note_tags)
 
     # Parse args and pass them to the appropriate func
     args = parser.parse_args(sys_args[1:])
