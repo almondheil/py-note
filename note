@@ -257,15 +257,15 @@ def note_tags(args):
 
     # Sort tags depending on arguments
     if args.alpha:
-        tags_list = sorted(list(found_tags.keys()))
+        tags_list = [(k, v) for k, v in sorted(found_tags.items(), key=lambda item: item[0])]
     else:
-        tags_list = [k for k, v in sorted(found_tags.items(), key=lambda item: item[1], reverse=True)]
+        tags_list = [(k, v) for k, v in sorted(found_tags.items(), key=lambda item: item[1], reverse=True)]
 
     # Print tags
     for t in tags_list:
-        print(t)
-
-
+        if args.count:
+            print(f'({t[1]}) ', end='')
+        print(t[0])
 
 def main(sys_args) -> int:
     """
@@ -314,6 +314,8 @@ def main(sys_args) -> int:
                              help='list tags in alphabetic order')
     parser_tags.add_argument('-f', '--freq', action='store_true',
                              help='list tags in order of frequency of use')
+    parser_tags.add_argument('-c', '--count', action='store_true',
+                             help='print counts of each tag')
     parser_tags.set_defaults(func=note_tags)
 
     # Parse args and pass them to the appropriate func
