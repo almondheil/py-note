@@ -92,13 +92,11 @@ def note_list(args):
     conf = parse_config()
 
     # Compile regex now
-    tags_re  = re.compile('^Tags:* *(.*?)$')
+    tags_re  = re.compile('^- tags:* *(.*?)$')
     if (args.long):
-        title_re = re.compile('^Title:* *(.*?)$')
-        date_re  = re.compile('^Date:* *(.*?)$')
+        date_re  = re.compile('^- date:* *(.*?)$')
     for filename in os.listdir(conf['note_dir']):
-        # Parse title, date, and tags from file if they exist
-        f_title = ""
+        # Parse date and tags from file if they exist
         f_date = ""
         f_tags = []
         with open(os.path.join(conf['note_dir'], filename), 'r') as file:
@@ -110,10 +108,6 @@ def note_list(args):
                     f_tags = tags_match[0].split()
                     continue
                 if (args.long):
-                    title_match = title_re.findall(line)
-                    if (title_match):
-                        f_title = title_match[0]
-                        continue
                     date_match  = date_re.findall(line)
                     if (date_match):
                         f_date = date_match[0]
@@ -130,15 +124,10 @@ def note_list(args):
             print()
             # Print either field or -- when long printing
             if (args.long):
-                print('  Title: ', end='')
-                print(f_title) if f_title else print('--')
-                print('  Date:  ', end='')
+                print('  date:  ', end='')
                 print(f_date) if f_date else print('--')
-                print('  Tags:  ', end='')
+                print('  tags:  ', end='')
                 print(*f_tags) if f_tags else print('--')
-
-def fzf(options):
-    return None
 
 def note_edit(args):
     """
@@ -151,7 +140,7 @@ def note_edit(args):
     conf = parse_config()
 
     to_select = []
-    tags_re  = re.compile('^Tags:* *(.*?)$')
+    tags_re  = re.compile('^- tags:* *(.*?)$')
     for filename in os.listdir(conf['note_dir']):
         f_tags = []
         with open(os.path.join(conf['note_dir'], filename), 'r') as file:
@@ -175,8 +164,8 @@ def note_edit(args):
 
 def note_new(args):
     """
-    Create a new note with a name based on today's date, as well an optional
-    title and tags.
+    Create a new note with a name based on today's date, as well as optional tags.
+
 
     args:
         args: Parsed command line args from argparse
@@ -216,16 +205,21 @@ def note_new(args):
             return
 
     with open(note_path, 'w') as note_file:
-        # Write blank title, today's date, and any specified tags
-        note_file.write("Title: \n")
-        note_file.write('Date:  ' + datetime.today().strftime('%Y-%m-%d') + "\n")
-        note_file.write('Tags: ')
+        # note header will look like this
+        # #
+        # - date: YYYY-mm-dd
+        # - tags:
+        #
+        # (their text will start here)
+        note_file.write("# \n")
+        note_file.write('- date:  ' + datetime.today().strftime('%Y-%m-%d') + "\n")
+        note_file.write('- tags: ')
         if (args.tags): [note_file.write(" " + tag) for tag in args.tags]
 
-        # Write ====== divider across
+        # add a newline after the little header
         note_file.write('\n\n')
-        [note_file.write('=') for _ in range(80)]
-        note_file.write('\n\n')
+
+    # open their editor on the note
     subprocess.run(conf['editor'].split() + [note_path])
 
 def note_tags(args):
@@ -241,7 +235,7 @@ def note_tags(args):
     # Prepare to store regex matched tags in a dict
     # keys will be tags, values will be counts
     found_tags = dict()
-    tags_re = re.compile('^Tags:* *(.*?)$')
+    tags_re = re.compile('^- tags:* *(.*?)$')
 
     # Go through all files and figure out what their tags are
     for filename in os.listdir(conf['note_dir']):
