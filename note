@@ -92,9 +92,9 @@ def note_list(args):
     conf = parse_config()
 
     # Compile regex now
-    tags_re  = re.compile('^- tags:* *(.*?)$')
+    tags_re  = re.compile('tags:* *(.*?)$', re.I)
     if (args.long):
-        date_re  = re.compile('^- date:* *(.*?)$')
+        date_re  = re.compile('date:* *(.*?)$', re.I)
     for filename in os.listdir(conf['note_dir']):
         # Parse date and tags from file if they exist
         f_date = ""
@@ -124,9 +124,9 @@ def note_list(args):
             print()
             # Print either field or -- when long printing
             if (args.long):
-                print('  date:  ', end='')
+                print('  date: ', end='')
                 print(f_date) if f_date else print('--')
-                print('  tags:  ', end='')
+                print('  tags: ', end='')
                 print(*f_tags) if f_tags else print('--')
 
 def note_edit(args):
@@ -140,7 +140,7 @@ def note_edit(args):
     conf = parse_config()
 
     to_select = []
-    tags_re  = re.compile('^- tags:* *(.*?)$')
+    tags_re  = re.compile('tags:* *(.*?)$', re.I)
     for filename in os.listdir(conf['note_dir']):
         f_tags = []
         with open(os.path.join(conf['note_dir'], filename), 'r') as file:
@@ -212,9 +212,10 @@ def note_new(args):
         #
         # (their text will start here)
         note_file.write("# \n")
-        note_file.write('- date:  ' + datetime.today().strftime('%Y-%m-%d') + "\n")
-        note_file.write('- tags: ')
-        if (args.tags): [note_file.write(" " + tag) for tag in args.tags]
+        note_file.write('- date: ' + datetime.today().strftime('%Y-%m-%d') + "\n")
+        note_file.write('- tags:') # one fewer space because of how we print each tag
+        if (args.tags):
+            [note_file.write(" " + tag) for tag in args.tags]
 
         # add a newline after the little header
         note_file.write('\n\n')
@@ -235,7 +236,7 @@ def note_tags(args):
     # Prepare to store regex matched tags in a dict
     # keys will be tags, values will be counts
     found_tags = dict()
-    tags_re = re.compile('^- tags:* *(.*?)$')
+    tags_re = re.compile('tags:* *(.*?)$', re.I)
 
     # Go through all files and figure out what their tags are
     for filename in os.listdir(conf['note_dir']):
